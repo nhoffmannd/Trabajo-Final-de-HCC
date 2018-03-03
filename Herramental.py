@@ -1,8 +1,5 @@
 import sys
-from PyQt5.QtWidgets import (QWidget, QToolTip, 
-    QPushButton, QApplication)
-from PyQt5.QtGui import QFont    
-
+from PyQt5.QtWidgets import QWidget, QPushButton, QApplication, QMessageBox, QDesktopWidget
 
 class Example(QWidget):
     
@@ -12,21 +9,31 @@ class Example(QWidget):
         self.initUI()
         
         
-    def initUI(self):
+    def initUI(self):               
         
-        QToolTip.setFont(QFont('SansSerif', 10))
+        qbtn = QPushButton('Quit', self)
+        qbtn.clicked.connect(self.close)
+        qbtn.resize(qbtn.sizeHint())
+        qbtn.move(50, 50)       
         
-        self.setToolTip('This is a <b>QWidget</b> widget')
-        
-        btn = QPushButton('Button', self)
-        btn.setToolTip('This is a <b>QPushButton</b> widget')
-        btn.resize(btn.sizeHint())
-        btn.move(50, 50)       
-        
-        self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Tooltips')    
+        self.setGeometry(300, 300, 250, 150)
+        self.setWindowTitle('Quit button')
+        self.center()
         self.show()
+
+    def closeEvent(self, event):
+        reply = QMessageBox.question(self, 'Message', "Are you sure to quit?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore() 
+
+    def center(self):
         
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
         
 if __name__ == '__main__':
     
