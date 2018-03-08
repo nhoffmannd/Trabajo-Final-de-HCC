@@ -57,5 +57,5 @@ for ii in range(0, int_columnas):
 sht_hoja = pd.read_excel(fle_open,int_hoja_buscada,usecols=arr_seleccion)
 
 #Esto nos devuelve sht_hoja, con lo que podremos tratar los resultados.
-
+return sht_hoja
 
