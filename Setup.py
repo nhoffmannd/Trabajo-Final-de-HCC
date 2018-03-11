@@ -3,6 +3,8 @@
 import pandas as pd
 import numpy as np
 import xlrd
+import matplotlib as mp
+import matplotlib.pyplot as pl
 
 #Ahora, vamos a probar la importación de un excel a Pandas.
 #La función es xlsx = pd.ExcelFile('foo.xls'). Ya cambiaremos foo.
@@ -56,6 +58,17 @@ for ii in range(0, int_columnas):
 #Entonces, tenemos la lista de arr_seleccion.
 sht_hoja = pd.read_excel(fle_open,int_hoja_buscada,usecols=arr_seleccion)
 
-#Esto nos devuelve sht_hoja, con lo que podremos tratar los resultados.
-return sht_hoja
+equis = 0
+yagriega = 0
 
+#Vamos a elegir ahora dos columnas para probar.
+int_columnas_a_usar = len(arr_seleccion)
+for ii in range(0, int_columnas_a_usar):
+    if (arr_interes[ii] == 'Charge_Capacity(Ah)'):
+        equis = ii
+    if (arr_interes[ii] == 'Voltage(V)'):
+        yagriega = ii
+
+#Esto nos devuelve sht_hoja, con lo que podremos tratar los resultados.
+mostrar =pl.plot(sht_hoja.iloc[:,[equis]],sht_hoja.iloc[:,[yagriega]])
+pl.show()
