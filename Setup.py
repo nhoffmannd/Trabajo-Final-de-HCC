@@ -70,5 +70,34 @@ for ii in range(0, int_columnas_a_usar):
         yagriega = ii
 
 #Esto nos devuelve sht_hoja, con lo que podremos tratar los resultados.
-mostrar =pl.plot(sht_hoja.iloc[:,[equis]],sht_hoja.iloc[:,[yagriega]])
-pl.show()
+#pl.plot(sht_hoja.iloc[:,[equis]],sht_hoja.iloc[:,[yagriega]])
+#pl.show()
+
+#Esto anda. Ahora, lo que tenemos que hacer, es empezar a organizar una serie de valores de X y de Y.
+#Vamos a hacer eso usando la columna Step_Index. Cada vez que cambie, vamos a saltar dos valores en n_secuencia.
+#Eso nos genera una nueva columna para X, una nueva columna para Y.
+##Reiniciamos el loop cada vez que cambia el step_index, o el cycle_index.
+n_secuencia = 0
+n_fila = 0
+
+ciclo_actual = -1;
+paso_actual = -1;
+arr_graficar = []
+
+#Aclarar: ciclo, paso, corriente, col_x, col_y
+#
+
+
+int_filas_a_trabajar = sht_hoja.shape[0]
+for ii in range(0, int_filas_a_trabajar):
+    if !(sht_hoja.iloc[ii,ciclo] == ciclo_actual && sht_hoja.iloc[ii,paso] == paso_actual):
+        n_secuencia = n_secuencia+2
+        n_fila = 0
+        ciclo_actual = sht_hoja.iloc[ii, ciclo]
+        paso_actual = sht_hoja.iloc[ii, ciclo]
+    if (sht_hoja.iloc[ii,corriente] != 0):
+        arr_graficar[n_fila,n_secuencia] = sht_hoja.iloc[ii, col_x]
+        arr_graficar[n_fila+1,n_secuencia] = sht_hoja.iloc[ii, col_y]
+        n_fila = n_fila +1
+
+#Con el ciclaje terminado, podemos graficar.
