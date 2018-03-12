@@ -80,21 +80,24 @@ for ii in range(0, int_columnas_a_usar):
 n_secuencia = 0
 n_fila = 0
 
-ciclo_actual = -1;
-paso_actual = -1;
+ciclo_actual = -1
+paso_actual = -1
 arr_graficar = []
+ciclo_usado = False
 
 #Aclarar: ciclo, paso, corriente, col_x, col_y
-#
+
 
 
 int_filas_a_trabajar = sht_hoja.shape[0]
 for ii in range(0, int_filas_a_trabajar):
-    if !(sht_hoja.iloc[ii,ciclo] == ciclo_actual && sht_hoja.iloc[ii,paso] == paso_actual):
+    ##Si cambiamos de ciclo, pasar a un ciclo más, SALVO que no se haya escrito nada en este ciclo.
+    if !((sht_hoja.iloc[ii,ciclo] == ciclo_actual) && (sht_hoja.iloc[ii,paso] == paso_actual) && (ciclo_usado == False )):
         n_secuencia = n_secuencia+2
         n_fila = 0
         ciclo_actual = sht_hoja.iloc[ii, ciclo]
         paso_actual = sht_hoja.iloc[ii, ciclo]
+    ##Incluir en el gráfico de ciclado si la corriente no vale cero.
     if (sht_hoja.iloc[ii,corriente] != 0):
         arr_graficar[n_fila,n_secuencia] = sht_hoja.iloc[ii, col_x]
         arr_graficar[n_fila+1,n_secuencia] = sht_hoja.iloc[ii, col_y]
