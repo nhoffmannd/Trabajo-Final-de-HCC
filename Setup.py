@@ -77,30 +77,71 @@ for ii in range(0, int_columnas_a_usar):
 #Vamos a hacer eso usando la columna Step_Index. Cada vez que cambie, vamos a saltar dos valores en n_secuencia.
 #Eso nos genera una nueva columna para X, una nueva columna para Y.
 ##Reiniciamos el loop cada vez que cambia el step_index, o el cycle_index.
-n_secuencia = 0
-n_fila = 0
+
 
 ciclo_actual = -1
 paso_actual = -1
-arr_graficar = []
-ciclo_usado = False
+arr_graficar = np.array([[0, 0],[0, 0]])
+
 
 #Aclarar: ciclo, paso, corriente, col_x, col_y
+for ii in range(0, int_columnas_a_usar):
+    if (arr_interes[ii] == 'Cycle_Index'):
+        ciclo = ii
+    if (arr_interes[ii] == 'Step_Index'):
+        paso = ii
+    if (arr_interes[ii] == 'Current(A)'):
+        corriente = ii
+    if (arr_interes[ii] == 'Charge_Capacity(Ah)'):
+        carga = ii
+    if (arr_interes[ii] == 'Discharge_Capacity(Ah)'):
+        descarga = ii
+
+print (arr_graficar)
+
+##Voy a usar esto varias veces, mejor lo defino.
+##A;adir valores de X en el axis 1
+def dar_fila(el_array, la_fila):
+    filas = el_array.shape[0]
+    if (filas < la_fila):
+        incluir = np.zeros((el_array.shape[1], (la_fila - filas)))
+        print (incluir.shape, el_array.shape, 'fila = 1, columna = 0')
+        el_array = np.append(el_array,incluir, axis =1)
+        print (el_array.shape)
+    return el_array
 
 
+##A;adir valores de Y en el axis 0
+def dar_columna(el_array, n_secuencia):
+    columnas = el_array.shape[1]
+    if columnas < n_secuencia:
+        incluir = np.zeros(((n_secuencia-columnas), el_array.shape[0]))
+        print (incluir.shape, el_array.shape, 'columna = 0, fila = 1')
+        el_array = np.append(el_array,incluir, axis=0)
+        print (el_array.shape)
+    return el_array
+
+n_secuencia = 0
+n_fila = 0
+ciclo_usado = False
 
 int_filas_a_trabajar = sht_hoja.shape[0]
 for ii in range(0, int_filas_a_trabajar):
     ##Si cambiamos de ciclo, pasar a un ciclo más, SALVO que no se haya escrito nada en este ciclo.
-    if !((sht_hoja.iloc[ii,ciclo] == ciclo_actual) && (sht_hoja.iloc[ii,paso] == paso_actual) && (ciclo_usado == False )):
+    if not ((sht_hoja.iloc[ii,ciclo] == ciclo_actual) and (sht_hoja.iloc[ii,paso] == paso_actual) and (ciclo_usado == False )):
         n_secuencia = n_secuencia+2
         n_fila = 0
         ciclo_actual = sht_hoja.iloc[ii, ciclo]
         paso_actual = sht_hoja.iloc[ii, ciclo]
     ##Incluir en el gráfico de ciclado si la corriente no vale cero.
     if (sht_hoja.iloc[ii,corriente] != 0):
-        arr_graficar[n_fila,n_secuencia] = sht_hoja.iloc[ii, col_x]
-        arr_graficar[n_fila+1,n_secuencia] = sht_hoja.iloc[ii, col_y]
+        col_x = descarga
+        if (sht_hoja.iloc[ii,corriente] > 0):
+            col_x = carga
+        arr_graficar = dar_fila(arr_graficar, n_fila)
+        arr_graficar = dar_columna(arr_graficar, n_secuencia+1)
+        arr_graficar[n_fila][n_secuencia] = sht_hoja.iloc[ii,col_x]
+        arr_graficar[n_fila][n_secuencia+1] = sht_hoja.iloc[ii,col_y]
         n_fila = n_fila +1
 
 #Con el ciclaje terminado, podemos graficar.
