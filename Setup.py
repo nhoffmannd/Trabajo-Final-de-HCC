@@ -73,6 +73,8 @@ for ii in range(0, int_columnas_a_usar):
         descarga = ii
     if (arr_interes[ii] == 'Voltage(V)'):
         voltaje = ii
+    if (arr_interes[ii] == 'Step_Time(s)'):
+        tiempo = ii
 
 #Vamos ahora a separar segmentos. Para cada uno, debemos decidir si corresponde carga o descarga. Para ello, generaremos un nuevo array.
 arr_append = np.zeros((1,2))
@@ -81,6 +83,10 @@ arr_archivo = False;
 filas_interes=sht_hoja.shape[0]
 int_ultimo_paso = -1;
 int_primer_paso = True
+
+#Para cada ciclo, registrar tiempo, de donde obtendremos C, tipo de ciclo, y 
+arr_ciclos_tiempo = [0]
+arr_ciclos_tipo = ['Carga']
 
 #Esto extrae los ceros de corriente, que no interesan.
 for ii in range(0, filas_interes):
@@ -102,6 +108,14 @@ for ii in range(0, filas_interes):
             if int_primer_paso:
                 int_primer_paso = False
             else:
+                arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][ii-1]
+                arr_ciclos_tiempo = arr_ciclos_tiempo + [0]
+                if sht_hoja["Current(A)"][ii] < 0:
+                    arr_ciclos_tipo[-1] = ['Carga']
+                else:
+                    arr_ciclos_tipo[-1] = ['Descarga']
+                arr_ciclos_tipo = arr_ciclos_tipo + [0]
+                
                 if arr_archivo == True:
                     if not arr_archivar.shape[0] == arr_graficar.shape[0]:
                         if arr_archivar.shape[0] > arr_graficar.shape[0]:
@@ -116,21 +130,40 @@ for ii in range(0, filas_interes):
                     arr_archivo = True
                     arr_archivar = np.copy(arr_graficar)
                     
-
-        #La clavamos en el array a graficar.
+        #Registrar los ultimos valores en la ultima serie.
         if arr_existe == False:
             arr_graficar = arr_append
             arr_existe = True
         else:
             arr_graficar = np.append(arr_graficar,arr_append,axis=0)
 
-##Ahora los dibujamos.
+##OK, el loop ha finalizado.
+arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][ii-1]
+if sht_hoja["Current(A)"][ii] > 0:
+    arr_ciclos_tipo[-1] = ['Carga']
+else:
+    arr_ciclos_tipo[-1] = ['Descarga']
 
-##Vamos a usar la funcion exec. Es un agujero negro en la seguridad, pero esto es de uso en academia, no sale de aca.
-poit = 'arr_archivar[0:200,-4],arr_archivar[0:200,-3]'
+if not arr_archivar.shape[0] == arr_graficar.shape[0]:
+    if arr_archivar.shape[0] > arr_graficar.shape[0]:
+        arr_igualar = np.zeros((abs(arr_archivar.shape[0]-arr_graficar.shape[0]),arr_graficar.shape[1]))
+        arr_graficar = np.append(arr_graficar,arr_igualar, 0)
+    if arr_archivar.shape[0] < arr_graficar.shape[0]:
+        arr_igualar = np.zeros((abs(arr_archivar.shape[0]-arr_graficar.shape[0]),arr_archivar.shape[1]))
+        arr_archivar = np.append(arr_archivar,arr_igualar, 0)
+
+arr_archivar = np.append(arr_archivar,arr_graficar,1)
+##OK, estas listo.
+
+#Ahora los dibujamos.
+#Vamos a usar la funcion exec.
+#Es un agujero negro en la seguridad, pero esto es de uso en academia, no sale de aca.
+poit = 'arr_archivar[0:200,2],arr_archivar[0:200,3], "b," '
 exec('pl.plot(' + poit + ')')
 
+arr_decir = len(arr_ciclos_tiempo)
+for ii in range(0, arr_decir):
+    print("El ciclo numero " + str(ii) + " es de " + str(arr_ciclos_tipo[ii]) + " con una duracion de " + str(int(arr_ciclos_tiempo[ii])) + " segundos")
+
+#Mostrame que hemos hecho.
 pl.show()
-
-
-#mostrar = pl.plot(arr_archivar[:,-4],arr_archivar[:,-3])
