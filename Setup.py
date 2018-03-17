@@ -87,7 +87,8 @@ int_primer_paso = True
 #Para cada ciclo, registrar tiempo, de donde obtendremos C, tipo de ciclo, y 
 arr_ciclos_tiempo = [0]
 arr_ciclos_tipo = ['Carga']
-jj = 0 #Uso JJ para marcar los que no valen 0.
+arr_ciclos_limite = [0]
+jj = 0 #Uso JJ para marcar el ultimo valor donde la corriente era distinta de 0.
 
 #Esto extrae los ceros de corriente, que no interesan.
 for ii in range(0, filas_interes):
@@ -111,6 +112,7 @@ for ii in range(0, filas_interes):
             else:
                 arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][jj]
                 arr_ciclos_tiempo = arr_ciclos_tiempo + [0]
+                arr_ciclos_limite = arr_ciclos_limite + [0]
                 if sht_hoja["Current(A)"][ii] < 0:
                     arr_ciclos_tipo[-1] = ['Carga']
                 else:
@@ -139,6 +141,7 @@ for ii in range(0, filas_interes):
             arr_graficar = np.append(arr_graficar,arr_append,axis=0)
 
         jj = ii
+        arr_ciclos_limite[-1] = 1 + arr_ciclos_limite[-1]
 
 ##OK, el loop ha finalizado.
 arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][jj]
@@ -158,15 +161,17 @@ if not arr_archivar.shape[0] == arr_graficar.shape[0]:
 arr_archivar = np.append(arr_archivar,arr_graficar,1)
 ##OK, estas listo.
 
+#Verificamos que tenemos todos los valores que necesitamos.
+arr_decir = len(arr_ciclos_tiempo)
+for ii in range(0, arr_decir):
+    print("Ciclo " + str(ii) + " de " + str(arr_ciclos_tipo[ii]) + " dura " + str(int(arr_ciclos_tiempo[ii])) + " seg o " + str(arr_ciclos_limite[ii]) + " lecturas.")
+
 #Ahora los dibujamos.
 #Vamos a usar la funcion exec.
 #Es un agujero negro en la seguridad, pero esto es de uso en academia, no sale de aca.
 poit = 'arr_archivar[0:200,2],arr_archivar[0:200,3], "b," '
 exec('pl.plot(' + poit + ')')
 
-arr_decir = len(arr_ciclos_tiempo)
-for ii in range(0, arr_decir):
-    print("El ciclo numero " + str(ii) + " es de " + str(arr_ciclos_tipo[ii]) + " con una duracion de " + str(int(arr_ciclos_tiempo[ii])) + " segundos")
 
-#Mostrame que hemos hecho.
+#Mostrame que hemos hecho algo.
 pl.show()
