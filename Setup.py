@@ -107,13 +107,10 @@ for ii in range(0, filas_interes):
                         if arr_archivar.shape[0] > arr_graficar.shape[0]:
                             arr_igualar = np.zeros((abs(arr_archivar.shape[0]-arr_graficar.shape[0]),arr_graficar.shape[1]))
                             arr_graficar = np.append(arr_graficar,arr_igualar, 0)
-                            
                         if arr_archivar.shape[0] < arr_graficar.shape[0]:
                             arr_igualar = np.zeros((abs(arr_archivar.shape[0]-arr_graficar.shape[0]),arr_archivar.shape[1]))
                             arr_archivar = np.append(arr_archivar,arr_igualar, 0)
                             
-
-                    
                     arr_archivar = np.append(arr_archivar,arr_graficar,1)
                 else:
                     arr_archivo = True
@@ -128,5 +125,12 @@ for ii in range(0, filas_interes):
             arr_graficar = np.append(arr_graficar,arr_append,axis=0)
 
 ##Ahora los dibujamos.
-mostrar = pl.plot(arr_archivar[:,-4],arr_archivar[:,-3])
+
+##Vamos a usar la funcion exec. Es un agujero negro en la seguridad, pero esto es de uso en academia, no sale de aca.
+poit = 'arr_archivar[0:200,-4],arr_archivar[0:200,-3]'
+exec('pl.plot(' + poit + ')')
+
 pl.show()
+
+
+#mostrar = pl.plot(arr_archivar[:,-4],arr_archivar[:,-3])
