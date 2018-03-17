@@ -173,7 +173,13 @@ for ii in range(0, arr_decir):
 
 argumentos = ''
 
-for ii in range(0, arr_decir):
+#Poner colores.
+color = ('FF0000', '0000AA', '00AA00', '999900', '009999', '990099', '555555', '000000', 'FF8888', 'FF0000')
+jj=0
+
+
+for kk in range(0, arr_decir):
+    ii = -1-kk
     #Vaciar argumento.
     argumento = ''
     #Introducir coord x.
@@ -189,9 +195,13 @@ for ii in range(0, arr_decir):
     argumento = argumento + '],'
     
     #Introducir argumentos de color.
-    argumento = argumento + "'"
-    argumento = argumento + 'b'
-    argumento = argumento + ",-'"
+    argumento = argumento + "'#" + color[jj] + "'"
+    #print (arr_ciclos_tipo[ii])
+    if arr_ciclos_tipo[ii] == ['Descarga']:
+        #print('Carga')
+        jj = jj +1
+        if (jj > len(color)-1):
+            jj = 0
 
     #Cerrar string.
     if not ii == arr_decir:
