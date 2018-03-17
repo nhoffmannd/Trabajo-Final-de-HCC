@@ -93,4 +93,6 @@ for ii in range(0, filas_interes):
         else:
             arr_graficar = np.append(arr_graficar,arr_append,axis=0)            
 
-print ("Esto es para que me deje de indentar donde no debe, tengo que sacarlo después")
+##Ahora los dibujamos.
+mostrar = pl.plot(arr_graficar[:,0],arr_graficar[:,1])
+pl.show()
