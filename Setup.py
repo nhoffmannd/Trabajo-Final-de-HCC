@@ -77,8 +77,10 @@ for ii in range(0, int_columnas_a_usar):
 #Vamos ahora a separar segmentos. Para cada uno, debemos decidir si corresponde carga o descarga. Para ello, generaremos un nuevo array.
 arr_append = np.zeros((1,2))
 arr_existe = False;
+arr_archivo = False;
 filas_interes=sht_hoja.shape[0]
 int_ultimo_paso = -1;
+int_primer_paso = True
 
 #Esto extrae los ceros de corriente, que no interesan.
 for ii in range(0, filas_interes):
@@ -93,8 +95,30 @@ for ii in range(0, filas_interes):
 
         #Verificamos que seguimos en el mismo paso. De no ser así, abrimos un nuevo paso.
         if not int_ultimo_paso == sht_hoja["Step_Index"][ii]:
-            arr_existe = False
             int_ultimo_paso = sht_hoja["Step_Index"][ii]
+            arr_existe = False
+
+            #El primer ciclo, se salta.
+            if int_primer_paso:
+                int_primer_paso = False
+            else:
+                if arr_archivo == True:
+                    if not arr_archivar.shape[0] == arr_graficar.shape[0]:
+                        if arr_archivar.shape[0] > arr_graficar.shape[0]:
+                            arr_igualar = np.zeros((abs(arr_archivar.shape[0]-arr_graficar.shape[0]),arr_graficar.shape[1]))
+                            arr_graficar = np.append(arr_graficar,arr_igualar, 0)
+                            
+                        if arr_archivar.shape[0] < arr_graficar.shape[0]:
+                            arr_igualar = np.zeros((abs(arr_archivar.shape[0]-arr_graficar.shape[0]),arr_archivar.shape[1]))
+                            arr_archivar = np.append(arr_archivar,arr_igualar, 0)
+                            
+
+                    
+                    arr_archivar = np.append(arr_archivar,arr_graficar,1)
+                else:
+                    arr_archivo = True
+                    arr_archivar = np.copy(arr_graficar)
+                    
 
         #La clavamos en el array a graficar.
         if arr_existe == False:
@@ -104,5 +128,5 @@ for ii in range(0, filas_interes):
             arr_graficar = np.append(arr_graficar,arr_append,axis=0)
 
 ##Ahora los dibujamos.
-mostrar = pl.plot(arr_graficar[:,0],arr_graficar[:,1], 'b,')
+mostrar = pl.plot(arr_archivar[:,-4],arr_archivar[:,-3])
 pl.show()
