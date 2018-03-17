@@ -164,13 +164,43 @@ arr_archivar = np.append(arr_archivar,arr_graficar,1)
 #Verificamos que tenemos todos los valores que necesitamos.
 arr_decir = len(arr_ciclos_tiempo)
 for ii in range(0, arr_decir):
-    print("Ciclo " + str(ii) + " de " + str(arr_ciclos_tipo[ii]) + " dura " + str(int(arr_ciclos_tiempo[ii])) + " seg o " + str(arr_ciclos_limite[ii]) + " lecturas.")
+    print("Ciclo " + str(ii) + " de " + str(arr_ciclos_tipo[ii]) + " dura " + str(int(arr_ciclos_tiempo[ii])) + " seg, " + str(arr_ciclos_limite[ii]) + " lecturas.")
 
 #Ahora los dibujamos.
 #Vamos a usar la funcion exec.
 #Es un agujero negro en la seguridad, pero esto es de uso en academia, no sale de aca.
-poit = 'arr_archivar[0:200,2],arr_archivar[0:200,3], "b," '
-exec('pl.plot(' + poit + ')')
+#poit = 'arr_archivar[0:200,2],arr_archivar[0:200,3], "b," '
+
+argumentos = ''
+
+for ii in range(0, arr_decir):
+    #Vaciar argumento.
+    argumento = ''
+    #Introducir coord x.
+    argumento = argumento + 'arr_archivar[0:' + str(arr_ciclos_limite[ii])
+    argumento = argumento + ','
+    argumento = argumento + str(2*ii)
+    argumento = argumento + '],'
+    
+    #Introducir coord y.
+    argumento = argumento + 'arr_archivar[0:' + str(arr_ciclos_limite[ii])
+    argumento = argumento + ','
+    argumento = argumento + str(2*ii+1)
+    argumento = argumento + '],'
+    
+    #Introducir argumentos de color.
+    argumento = argumento + "'"
+    argumento = argumento + 'b'
+    argumento = argumento + ",-'"
+
+    #Cerrar string.
+    if not ii == arr_decir:
+        argumento = argumento + ','
+
+    #Agregar a los argumentos totales.
+    argumentos = argumentos + argumento
+
+exec('pl.plot(' + argumentos + ')')
 
 
 #Mostrame que hemos hecho algo.
