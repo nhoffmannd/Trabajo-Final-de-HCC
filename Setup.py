@@ -78,21 +78,31 @@ for ii in range(0, int_columnas_a_usar):
 arr_append = np.zeros((1,2))
 arr_existe = False;
 filas_interes=sht_hoja.shape[0]
+int_ultimo_paso = -1;
 
 #Esto extrae los ceros de corriente, que no interesan.
 for ii in range(0, filas_interes):
     if not sht_hoja["Current(A)"][ii] == 0:
+        
+        #Armamos la tupla.
         arr_append[0,1] = sht_hoja["Voltage(V)"][ii]
         if sht_hoja["Current(A)"][ii] > 0:
             arr_append[0,0] = sht_hoja["Charge_Capacity(Ah)"][ii]
         else:
             arr_append[0,0] = sht_hoja["Discharge_Capacity(Ah)"][ii]
+
+        #Verificamos que seguimos en el mismo paso. De no ser así, abrimos un nuevo paso.
+        if not int_ultimo_paso == sht_hoja["Step_Index"][ii]:
+            arr_existe = False
+            int_ultimo_paso = sht_hoja["Step_Index"][ii]
+
+        #La clavamos en el array a graficar.
         if arr_existe == False:
             arr_graficar = arr_append
             arr_existe = True
         else:
-            arr_graficar = np.append(arr_graficar,arr_append,axis=0)            
+            arr_graficar = np.append(arr_graficar,arr_append,axis=0)
 
 ##Ahora los dibujamos.
-mostrar = pl.plot(arr_graficar[:,0],arr_graficar[:,1])
+mostrar = pl.plot(arr_graficar[:,0],arr_graficar[:,1], 'b,')
 pl.show()
