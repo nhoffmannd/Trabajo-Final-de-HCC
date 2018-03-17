@@ -87,6 +87,7 @@ int_primer_paso = True
 #Para cada ciclo, registrar tiempo, de donde obtendremos C, tipo de ciclo, y 
 arr_ciclos_tiempo = [0]
 arr_ciclos_tipo = ['Carga']
+jj = 0 #Uso JJ para marcar los que no valen 0.
 
 #Esto extrae los ceros de corriente, que no interesan.
 for ii in range(0, filas_interes):
@@ -108,7 +109,7 @@ for ii in range(0, filas_interes):
             if int_primer_paso:
                 int_primer_paso = False
             else:
-                arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][ii-1]
+                arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][jj]
                 arr_ciclos_tiempo = arr_ciclos_tiempo + [0]
                 if sht_hoja["Current(A)"][ii] < 0:
                     arr_ciclos_tipo[-1] = ['Carga']
@@ -137,8 +138,10 @@ for ii in range(0, filas_interes):
         else:
             arr_graficar = np.append(arr_graficar,arr_append,axis=0)
 
+        jj = ii
+
 ##OK, el loop ha finalizado.
-arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][ii-1]
+arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][jj]
 if sht_hoja["Current(A)"][ii] > 0:
     arr_ciclos_tipo[-1] = ['Carga']
 else:
