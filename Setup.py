@@ -197,7 +197,7 @@ for kk in range(0, arr_decir):
     #Introducir argumentos de color.
     argumento = argumento + "'#" + color[jj] + "'"
     #print (arr_ciclos_tipo[ii])
-    if arr_ciclos_tipo[ii] == ['Descarga']:
+    if arr_ciclos_tipo[ii] == ['Carga']:
         #print('Carga')
         jj = jj +1
         if (jj > len(color)-1):
