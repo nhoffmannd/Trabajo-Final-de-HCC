@@ -90,20 +90,26 @@ arr_ciclos_tipo = ['Carga']
 arr_ciclos_limite = [0]
 jj = 0 #Uso JJ para marcar el ultimo valor donde la corriente era distinta de 0.
 
+#Refactorización: que lea cada valor una única vez.
+flt_corriente = 0.0;
+flt_paso=0;
+
 #Esto extrae los ceros de corriente, que no interesan.
 for ii in range(0, filas_interes):
-    if not sht_hoja["Current(A)"][ii] == 0:
+    flt_corriente = sht_hoja["Current(A)"][ii]
+    if not flt_corriente == 0:
         
         #Armamos la tupla.
         arr_append[0,1] = sht_hoja["Voltage(V)"][ii]
-        if sht_hoja["Current(A)"][ii] > 0:
+        if flt_corriente > 0:
             arr_append[0,0] = sht_hoja["Charge_Capacity(Ah)"][ii]
         else:
             arr_append[0,0] = sht_hoja["Discharge_Capacity(Ah)"][ii]
 
         #Verificamos que seguimos en el mismo paso. De no ser así, abrimos un nuevo paso.
-        if not int_ultimo_paso == sht_hoja["Step_Index"][ii]:
-            int_ultimo_paso = sht_hoja["Step_Index"][ii]
+        flt_paso = sht_hoja["Step_Index"][ii]
+        if not int_ultimo_paso == flt_paso:
+            int_ultimo_paso = flt_paso
             arr_existe = False
 
             #El primer ciclo, se salta.
@@ -113,7 +119,7 @@ for ii in range(0, filas_interes):
                 arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][jj]
                 arr_ciclos_tiempo = arr_ciclos_tiempo + [0]
                 arr_ciclos_limite = arr_ciclos_limite + [0]
-                if sht_hoja["Current(A)"][ii] < 0:
+                if flt_corriente < 0:
                     arr_ciclos_tipo[-1] = ['Carga']
                 else:
                     arr_ciclos_tipo[-1] = ['Descarga']
