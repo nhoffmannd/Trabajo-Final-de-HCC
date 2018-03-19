@@ -23,6 +23,27 @@ fle_open = pd.ExcelFile('bar.xls')
 arr_hojas = fle_open.sheet_names
 int_hojas = len(arr_hojas)
 
+##Buscamos la hoja que da los datos de material activo.
+int_hoja_buscada = -1
+str_info = "Info"
+for ii in range(0,int_hojas):
+    if arr_hojas[ii] == str_info:
+        int_hoja_buscada = ii
+        break
+sht_hoja =pd.read_excel(fle_open,int_hoja_buscada)
+material_activo = (sht_hoja.iloc[3,1])
+
+boo_aceptar = False
+boo_empezamos = True
+while boo_aceptar == False:
+    if boo_empezamos == False:
+        print("No se acepta ese valor. Favor de introducir el valor.")
+    boo_empezamos = False
+    print(material_activo)
+    flo_MA = float(input("Por favor, introduzca la cantidad de material activo, en miligramos. "))
+    if type(flo_MA) == float:
+        boo_aceptar = True
+
 #No olvidemos los ":" si estás iterando en python.
 str_hojas = "Channel"
 for ii in range(0, int_hojas):
@@ -102,9 +123,9 @@ for ii in range(0, filas_interes):
         #Armamos la tupla.
         arr_append[0,1] = sht_hoja["Voltage(V)"][ii]
         if flt_corriente > 0:
-            arr_append[0,0] = sht_hoja["Charge_Capacity(Ah)"][ii]
+            arr_append[0,0] = sht_hoja["Charge_Capacity(Ah)"][ii] * 1000000 / flo_MA
         else:
-            arr_append[0,0] = sht_hoja["Discharge_Capacity(Ah)"][ii]
+            arr_append[0,0] = sht_hoja["Discharge_Capacity(Ah)"][ii] * 1000000 / flo_MA
 
         #Verificamos que seguimos en el mismo paso. De no ser así, abrimos un nuevo paso.
         flt_paso = sht_hoja["Step_Index"][ii]
