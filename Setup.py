@@ -190,8 +190,8 @@ arr_archivar = np.append(arr_archivar,arr_graficar,1)
 
 #Verificamos que tenemos todos los valores que necesitamos.
 arr_decir = len(arr_ciclos_tiempo)
-for ii in range(0, arr_decir):
-    print("Ciclo " + str(ii) + " de " + str(arr_ciclos_tipo[ii]) + " dura " + str(int(arr_ciclos_tiempo[ii])) + " seg, " + str(arr_ciclos_limite[ii]) + " lecturas.")
+#for ii in range(0, arr_decir):
+    #print("Ciclo " + str(ii) + " de " + str(arr_ciclos_tipo[ii]) + " dura " + str(int(arr_ciclos_tiempo[ii])) + " seg, " + str(arr_ciclos_limite[ii]) + " lecturas.")
 
 #Ahora los dibujamos.
 #Vamos a usar la funcion exec.
@@ -200,45 +200,55 @@ for ii in range(0, arr_decir):
 
 argumentos = ''
 
-#Poner colores.
+#Inicializar colores.
 color = ('FF0000', '0000AA', '00AA00', '999900', '009999', '990099', '555555', '000000', 'FF8888', 'FF0000')
 jj=0
 
+arr_eficiencias = ()
+arr_descargas = ()
 
+#Refactorizado para que tenga menos líneas.
 for kk in range(0, arr_decir):
     ii = -1-kk
-    #Vaciar argumento.
-    argumento = ''
-    #Introducir coord x.
-    argumento = argumento + 'arr_archivar[0:' + str(arr_ciclos_limite[ii])
-    argumento = argumento + ','
-    argumento = argumento + str(2*ii)
-    argumento = argumento + '],'
+    argumento = '' + 'arr_archivar[0:' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii) + '],'            #Introducir coord x.
+    argumento = argumento + 'arr_archivar[0:' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii+1) + '],'   #Introducir coord y.
+    argumento = argumento + "'#" + color[jj] + "'"                                                      #Introducir argumentos de color.
     
-    #Introducir coord y.
-    argumento = argumento + 'arr_archivar[0:' + str(arr_ciclos_limite[ii])
-    argumento = argumento + ','
-    argumento = argumento + str(2*ii+1)
-    argumento = argumento + '],'
-    
-    #Introducir argumentos de color.
-    argumento = argumento + "'#" + color[jj] + "'"
-    #print (arr_ciclos_tipo[ii])
     if arr_ciclos_tipo[ii] == ['Carga']:
-        #print('Carga')
         jj = jj +1
         if (jj > len(color)-1):
             jj = 0
+        
+        flo_cap_carga = arr_archivar[arr_ciclos_limite[ii]-1,2*ii+1]
+        flo_eficiencia =(flo_cap_descarga/flo_cap_carga)
+        
+        if (flo_eficiencia > 2 or flo_eficiencia < 0.25):
+            flo_eficiencia = 0.5
+        flo_eficiencia = flo_eficiencia * 100
+            
+        arr_eficiencias = arr_eficiencias + (flo_eficiencia,)
+    else:
+        flo_cap_descarga = arr_archivar[arr_ciclos_limite[ii]-1,2*ii+1]
+        arr_descargas = arr_descargas + (flo_cap_descarga,)
 
-    #Cerrar string.
+    #Cerrar string cuando terminemos.
     if not ii == arr_decir:
         argumento = argumento + ','
 
     #Agregar a los argumentos totales.
     argumentos = argumentos + argumento
 
-exec('pl.plot(' + argumentos + ')')
+#exec('pl.plot(' + argumentos + ')')
 
+#Mostrar que hemos hecho algo.
+#pl.show()
 
-#Mostrame que hemos hecho algo.
+#Luego, creamos un gráfico más, donde se verá la eficiencia...
+arr_eficiencias = arr_eficiencias[::-1]
+arr_descargas = arr_descargas[::-1]
+
+print(arr_eficiencias);
+print(arr_descargas);
+
+pl.plot(arr_eficiencias,arr_descargas)
 pl.show()
