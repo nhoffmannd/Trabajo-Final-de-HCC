@@ -36,13 +36,14 @@ material_activo = (sht_hoja.iloc[3,1])
 boo_aceptar = False
 boo_empezamos = True
 while boo_aceptar == False:
-    if boo_empezamos == False:
-        print("No se acepta ese valor. Favor de introducir el valor.")
     boo_empezamos = False
-    print(material_activo)
-    flo_MA = float(input("Por favor, introduzca la cantidad de material activo, en miligramos. "))
-    if type(flo_MA) == float:
-        boo_aceptar = True
+    try:
+        print(material_activo)
+        flo_MA = float(input("Por favor, introduzca la cantidad de material activo, en miligramos. "))
+        if type(flo_MA) == float:
+            boo_aceptar = True
+    except:
+        print("No se acepta ese valor. Favor de introducir el valor.")
 
 #No olvidemos los ":" si estás iterando en python.
 str_hojas = "Channel"
