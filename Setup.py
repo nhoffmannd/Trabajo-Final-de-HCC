@@ -259,27 +259,32 @@ arr_descargas = ()
 
 #Refactorizado para que tenga menos líneas.
 for kk in range(0, arr_decir):
+    ##Se leen en sentido inverso, desde el último hasta el primero, para estar seguros de que el más viejo se vea por encima.
     ii = -1-kk
     argumento = '' + 'arr_archivar[0:' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii) + '],'            #Introducir coord x.
     argumento = argumento + 'arr_archivar[0:' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii+1) + '],'   #Introducir coord y.
     argumento = argumento + "'#" + color[jj] + "'"                                                      #Introducir argumentos de color.
+
+    #Verificar si podemos hablar de eficiencias y de descargas.
+    #print('arr_archivar[' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii) + ']' )
+    #print(arr_archivar[arr_ciclos_limite[ii]-1,2*ii])
     
+
+    ##Esto busca si empezó un nuevo ciclo, y si es así, cambia el color.
+        
     if arr_ciclos_tipo[ii] == ['Carga']:
+        if kk != 0:
+            flt_carga = arr_archivar[arr_ciclos_limite[ii]-1,2*ii]
+            flt_eficiencia = 100*arr_descargas[-1]/flt_carga
+            if flt_eficiencia > 100:
+                flt_eficiencia = -1
+            arr_eficiencias = arr_eficiencias + (flt_eficiencia,)
+            
         jj = jj +1
         if (jj > len(color)-1):
             jj = 0
-        
-        flo_cap_carga = arr_archivar[arr_ciclos_limite[ii]-1,2*ii+1]
-        flo_eficiencia =(flo_cap_descarga/flo_cap_carga)
-        
-        if (flo_eficiencia > 2 or flo_eficiencia < 0.25):
-            flo_eficiencia = 0.5
-        flo_eficiencia = flo_eficiencia * 100
-            
-        arr_eficiencias = arr_eficiencias + (flo_eficiencia,)
     else:
-        flo_cap_descarga = arr_archivar[arr_ciclos_limite[ii]-1,2*ii+1]
-        arr_descargas = arr_descargas + (flo_cap_descarga,)
+        arr_descargas = arr_descargas + (arr_archivar[arr_ciclos_limite[ii]-1,2*ii],)
 
     #Cerrar string cuando terminemos.
     if not ii == arr_decir:
@@ -296,9 +301,9 @@ for kk in range(0, arr_decir):
 #Luego, creamos un gráfico más, donde se verá la eficiencia...
 arr_eficiencias = arr_eficiencias[::-1]
 arr_descargas = arr_descargas[::-1]
+print(arr_descargas)
+print(arr_eficiencias)
+arr_equis = (1,2,3,4,5,6,7,8,9)
 
-print(arr_eficiencias);
-print(arr_descargas);
-
-pl.plot(arr_eficiencias,arr_descargas)
+pl.plot(arr_equis,arr_eficiencias,arr_equis,arr_descargas)
 pl.show()
