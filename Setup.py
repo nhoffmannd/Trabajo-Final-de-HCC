@@ -34,6 +34,55 @@ sht_hoja =pd.read_excel(fle_open,int_hoja_buscada)
 material_activo = (sht_hoja.iloc[3,1])
 
 boo_aceptar = False
+#Tratamos de leerlo de manera automatizada. Buscamos los strings que dan algo.
+flo_MA = -1
+posicion_masa = -1
+
+if posicion_masa == -1:
+    posicion_masa = material_activo.find('mg de MA')
+if posicion_masa == -1:
+    posicion_masa = material_activo.find('mg de material activo')
+if posicion_masa == -1:
+    posicion_masa = material_activo.find('mg MA ')
+if posicion_masa == -1:
+    posicion_masa = material_activo.find('mg material activo')
+
+#Si llegamos a algo, posicion deja de ser -1. Entonces, registramos.
+if not posicion_masa == -1:
+    print("Sufijo")
+    try:
+        flo_MA = float(material_activo[posicion_masa-5,posicion_masa-2])
+    except:
+        flo_MA = -1
+
+#Si no, probamos con otra posicion.
+if posicion_masa == -1:
+    posicion_masa = material_activo.find('activo ')
+    if not posicion_masa == -1:
+        posicion_masa = posicion_masa + len('activo ')
+if posicion_masa == -1:
+    posicion_masa = material_activo.find('Activo ')
+    print('Mayusculas' + str(posicion_masa))
+    if not posicion_masa == -1:
+        posicion_masa = posicion_masa + len('activo ')
+if posicion_masa == -1:
+    posicion_masa = material_activo.find('MA ')
+    if not posicion_masa == -1:
+        posicion_masa = posicion_masa + len('MA ')
+
+#Ahora registramos otra cosa.
+if not posicion_masa == -1:
+    print("Prefijo")
+    try:
+        flo_MA = float(material_activo[posicion_masa:posicion_masa+3])
+    except:
+        print(material_activo[posicion_masa:posicion_masa+3])
+        flo_MA = -1
+
+if flo_MA > 0:
+    boo_aceptar = True
+
+#Si no, lo conseguimos manualmente...
 boo_empezamos = True
 while boo_aceptar == False:
     boo_empezamos = False
