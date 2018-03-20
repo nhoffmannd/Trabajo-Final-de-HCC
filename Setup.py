@@ -273,11 +273,11 @@ for kk in range(0, arr_decir):
     ##Esto busca si empezó un nuevo ciclo, y si es así, cambia el color.
         
     if arr_ciclos_tipo[ii] == ['Carga']:
-        if kk != 0:
+        if kk != arr_decir-1:
             flt_carga = arr_archivar[arr_ciclos_limite[ii]-1,2*ii]
             flt_eficiencia = 100*arr_descargas[-1]/flt_carga
-            if flt_eficiencia > 100:
-                flt_eficiencia = -1
+            if flt_eficiencia > 200:
+                flt_eficiencia = 0
             arr_eficiencias = arr_eficiencias + (flt_eficiencia,)
             
         jj = jj +1
@@ -298,12 +298,27 @@ for kk in range(0, arr_decir):
 #Mostrar que hemos hecho algo.
 #pl.show()
 
-#Luego, creamos un gráfico más, donde se verá la eficiencia...
+#Luego, invertimos estos arrays.
 arr_eficiencias = arr_eficiencias[::-1]
 arr_descargas = arr_descargas[::-1]
-print(arr_descargas)
-print(arr_eficiencias)
-arr_equis = (1,2,3,4,5,6,7,8,9)
 
-pl.plot(arr_equis,arr_eficiencias,arr_equis,arr_descargas)
+#Refactorizar esto.
+arr_equis = range(1,len(arr_descargas)+1)
+#pl.plot(arr_equis[1:],arr_eficiencias,arr_equis,arr_descargas)
+
+color = 'tab:red'
+
+fig, ax1 = pl.subplots()
+ax1.set_xlabel("Ciclo")
+ax1.set_ylabel('Capacidad de Descarga[mAh/g]', color = color)
+ax1.plot(arr_equis, arr_descargas, color=color)
+ax1.tick_params(axis='y', labelcolor=color)
+
+ax2 = ax1.twinx()
+color = 'tab:blue'
+ax2.set_ylabel('Eficiencia[%]',color = color)
+ax2.plot(arr_equis[1:], arr_eficiencias, color = color)
+ax2.tick_params(axis='y', labelcolor=color)
+
+fig.tight_layout()
 pl.show()
