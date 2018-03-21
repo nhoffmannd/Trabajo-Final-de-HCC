@@ -256,6 +256,7 @@ jj=0
 
 arr_eficiencias = ()
 arr_descargas = ()
+lin = pl.figure(1)
 
 #Refactorizado para que tenga menos líneas.
 for kk in range(0, arr_decir):
@@ -264,6 +265,9 @@ for kk in range(0, arr_decir):
     argumento = '' + 'arr_archivar[0:' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii) + '],'            #Introducir coord x.
     argumento = argumento + 'arr_archivar[0:' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii+1) + '],'   #Introducir coord y.
     argumento = argumento + "'#" + color[jj] + "'"                                                      #Introducir argumentos de color.
+
+    
+    ax = lin.add_subplot(arr_archivar[0:arr_ciclos_limite[ii],2*ii],arr_archivar[0:arr_ciclos_limite[ii],2*ii+1],kk) #Rows, cols, position[k]
 
     #Verificar si podemos hablar de eficiencias y de descargas.
     #print('arr_archivar[' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii) + ']' )
@@ -296,7 +300,7 @@ for kk in range(0, arr_decir):
 #exec('pl.plot(' + argumentos + ')')
 
 #Mostrar que hemos hecho algo.
-#pl.show()
+pl.show()
 
 #Luego, invertimos estos arrays.
 arr_eficiencias = arr_eficiencias[::-1]
