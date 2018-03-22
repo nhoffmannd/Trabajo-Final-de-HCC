@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import (QMainWindow, QTextEdit,
     QAction, QFileDialog, QApplication)
 from PyQt5.QtGui import QIcon
 import sys
+exec(open('Definiciones.py').read())
 
 class Example(QMainWindow):
     
@@ -32,18 +33,14 @@ class Example(QMainWindow):
         
         
     def showDialog(self):
-
         fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
-
         if fname[0]:
             f = open(fname[0], 'r')
-
             with f:
                 data = f.read()
                 self.textEdit.setText(data)        
         
 if __name__ == '__main__':
-    
     app = QApplication(sys.argv)
     ex = Example()
     sys.exit(app.exec_())
