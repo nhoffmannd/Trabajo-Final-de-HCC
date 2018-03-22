@@ -256,7 +256,15 @@ jj=0
 
 arr_eficiencias = ()
 arr_descargas = ()
-lin = pl.figure(1)
+arr_lineas = ()
+
+
+from matplotlib.collections import LineCollection
+fig, ax = pl.subplots()
+x_min = 10000.0
+x_max = -10000.0
+y_min = 10000.0
+y_max = -10000.0
 
 #Refactorizado para que tenga menos líneas.
 for kk in range(0, arr_decir):
@@ -266,16 +274,17 @@ for kk in range(0, arr_decir):
     argumento = argumento + 'arr_archivar[0:' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii+1) + '],'   #Introducir coord y.
     argumento = argumento + "'#" + color[jj] + "'"                                                      #Introducir argumentos de color.
 
-    
-    ax = lin.add_subplot(arr_archivar[0:arr_ciclos_limite[ii],2*ii],arr_archivar[0:arr_ciclos_limite[ii],2*ii+1],kk) #Rows, cols, position[k]
+    ##Ahora, armamos algo más dinámico.
+    arr_armado = np.zeros((arr_ciclos_limite[ii],2));
+    arr_armado[:,0] = arr_archivar[0:arr_ciclos_limite[ii],2*ii]
+    x_min = min(x_min,arr_armado[:,0].min())
+    x_max = max(x_max,arr_armado[:,0].max())
+    arr_armado[:,1] = arr_archivar[0:arr_ciclos_limite[ii],2*ii+1]
+    y_min = min(y_min,arr_armado[:,1].min())
+    y_max = max(y_max,arr_armado[:,1].max())
+    arr_lineas = arr_lineas + (arr_armado,)
 
-    #Verificar si podemos hablar de eficiencias y de descargas.
-    #print('arr_archivar[' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii) + ']' )
-    #print(arr_archivar[arr_ciclos_limite[ii]-1,2*ii])
-    
-
-    ##Esto busca si empezó un nuevo ciclo, y si es así, cambia el color.
-        
+    ##Esto busca si empezó un nuevo ciclo, y si es así, cambia el color.        
     if arr_ciclos_tipo[ii] == ['Carga']:
         if kk != arr_decir-1:
             flt_carga = arr_archivar[arr_ciclos_limite[ii]-1,2*ii]
@@ -283,7 +292,6 @@ for kk in range(0, arr_decir):
             if flt_eficiencia > 200:
                 flt_eficiencia = 0
             arr_eficiencias = arr_eficiencias + (flt_eficiencia,)
-            
         jj = jj +1
         if (jj > len(color)-1):
             jj = 0
@@ -299,7 +307,10 @@ for kk in range(0, arr_decir):
 
 #exec('pl.plot(' + argumentos + ')')
 
-#Mostrar que hemos hecho algo.
+line_segments = LineCollection(arr_lineas)
+ax.add_collection(line_segments)
+ax.set_xlim(x_min,x_max)
+ax.set_ylim(y_min,y_max)
 pl.show()
 
 #Luego, invertimos estos arrays.
