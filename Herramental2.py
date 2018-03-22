@@ -14,8 +14,8 @@ class Example(QMainWindow):
         
     def initUI(self):      
 
-        self.textEdit = QTextEdit()
-        self.setCentralWidget(self.textEdit)
+        #self.textEdit = QTextEdit()
+        #self.setCentralWidget(self.textEdit)
         self.statusBar()
 
         openFile = QAction(QIcon('open.png'), 'Open', self)
@@ -35,10 +35,8 @@ class Example(QMainWindow):
     def showDialog(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
         if fname[0]:
-            f = open(fname[0], 'r')
-            with f:
-                data = f.read()
-                self.textEdit.setText(data)        
+            f = (fname[0])
+            abrir_archivo(fname[0])
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)
