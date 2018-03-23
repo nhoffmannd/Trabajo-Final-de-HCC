@@ -9,13 +9,14 @@ class Example(QMainWindow):
     def __init__(self):
         super().__init__()
         
+        
         self.initUI()
         
         
     def initUI(self):      
 
-        #self.textEdit = QTextEdit()
-        #self.setCentralWidget(self.textEdit)
+        self.textEdit = QTextEdit()
+        self.setCentralWidget(self.textEdit)
         self.statusBar()
 
         openFile = QAction(QIcon('open.png'), 'Open', self)
@@ -25,7 +26,7 @@ class Example(QMainWindow):
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(openFile)       
+        fileMenu.addAction(openFile)
         
         self.setGeometry(300, 300, 350, 300)
         self.setWindowTitle('File dialog')
@@ -38,9 +39,11 @@ class Example(QMainWindow):
             f = (fname[0])
             f = abrir_archivo(fname[0])
             ma = buscar_masa_MA(f)
+            self.textEdit.setText(str(ma))
             hj = generar_hoja(f)
-            sh = separar_hoja(hj, ma)
-            
+            #sh, ctm, cty, cl = separar_ciclos(hj, ma)
+            #al, ae, ad = hacer_graficas(sh, ctm, cty, cl)
+            #dibujar_capacidades(al)
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import xlrd
-#import matplotlib as mp
+import matplotlib as mp
 import matplotlib.pyplot as pl
 from matplotlib.collections import LineCollection
 
@@ -30,10 +30,11 @@ def buscar_masa_MA (fle_open):
     if posicion_masa == -1:
         posicion_masa = material_activo.find('mg material activo')
     if not posicion_masa == -1:
-        try:
-            flo_MA = float(material_activo[posicion_masa-5,posicion_masa-2])
-        except:
-            flo_MA = -1
+        for i in range(0,5):
+            try:
+                flo_MA = float((material_activo[posicion_masa-2+i,posicion_masa-1]).replace(',','.'))
+            except:
+                pass
     if posicion_masa == -1:
         posicion_masa = material_activo.find('activo ')
         if not posicion_masa == -1:
@@ -92,13 +93,8 @@ def generar_hoja( fle_open ):
                 arr_seleccion.append(ii)
     return pd.read_excel(fle_open,int_hoja_buscada,usecols=arr_seleccion)
 
-
-
 def separar_ciclos ( sht_hoja , flo_MA ):
-    
     arr_interes = list(sht_hoja.columns.values)
-
-    #Ordenamos nuestros stats.
     int_columnas_a_usar = len(arr_interes)
     for ii in range(0, int_columnas_a_usar):
         if (arr_interes[ii] == 'Cycle_Index'):
@@ -115,44 +111,30 @@ def separar_ciclos ( sht_hoja , flo_MA ):
             voltaje = ii
         if (arr_interes[ii] == 'Step_Time(s)'):
             tiempo = ii
-
-    #Vamos ahora a separar segmentos. Para cada uno, debemos decidir si corresponde carga o descarga. Para ello, generaremos un nuevo array.
     arr_append = np.zeros((1,2))
     arr_existe = False;
     arr_archivo = False;
     filas_interes=sht_hoja.shape[0]
     int_ultimo_paso = -1;
     int_primer_paso = True
-
-    #Para cada ciclo, registrar tiempo, de donde obtendremos C, tipo de ciclo, y 
     arr_ciclos_tiempo = [0]
     arr_ciclos_tipo = ['Carga']
     arr_ciclos_limite = [0]
-    jj = 0 #Uso JJ para marcar el ultimo valor donde la corriente era distinta de 0.
-
-    #Refactorización: que lea cada valor una única vez.
+    jj = 0
     flt_corriente = 0.0;
     flt_paso=0;
-
-    #Esto extrae los ceros de corriente, que no interesan.
     for ii in range(0, filas_interes):
         flt_corriente = sht_hoja["Current(A)"][ii]
         if not flt_corriente == 0:
-            
-            #Armamos la tupla.
             arr_append[0,1] = sht_hoja["Voltage(V)"][ii]
             if flt_corriente > 0:
                 arr_append[0,0] = sht_hoja["Charge_Capacity(Ah)"][ii] * 1000000 / flo_MA
             else:
                 arr_append[0,0] = sht_hoja["Discharge_Capacity(Ah)"][ii] * 1000000 / flo_MA
-
-            #Verificamos que seguimos en el mismo paso. De no ser así, abrimos un nuevo paso.
             flt_paso = sht_hoja["Step_Index"][ii]
             if not int_ultimo_paso == flt_paso:
                 int_ultimo_paso = flt_paso
                 arr_existe = False
-
-                #El primer ciclo, se salta.
                 if int_primer_paso:
                     int_primer_paso = False
                 else:
@@ -178,8 +160,6 @@ def separar_ciclos ( sht_hoja , flo_MA ):
                     else:
                         arr_archivo = True
                         arr_archivar = np.copy(arr_graficar)
-                        
-            #Registrar los ultimos valores en la ultima serie.
             if arr_existe == False:
                 arr_graficar = arr_append
                 arr_existe = True
@@ -188,14 +168,11 @@ def separar_ciclos ( sht_hoja , flo_MA ):
 
             jj = ii
             arr_ciclos_limite[-1] = 1 + arr_ciclos_limite[-1]
-
-    ##OK, el loop ha finalizado.
     arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][jj]
     if sht_hoja["Current(A)"][ii] > 0:
         arr_ciclos_tipo[-1] = ['Carga']
     else:
         arr_ciclos_tipo[-1] = ['Descarga']
-
     if not arr_archivar.shape[0] == arr_graficar.shape[0]:
         if arr_archivar.shape[0] > arr_graficar.shape[0]:
             arr_igualar = np.zeros((abs(arr_archivar.shape[0]-arr_graficar.shape[0]),arr_graficar.shape[1]))
@@ -203,20 +180,13 @@ def separar_ciclos ( sht_hoja , flo_MA ):
         if arr_archivar.shape[0] < arr_graficar.shape[0]:
             arr_igualar = np.zeros((abs(arr_archivar.shape[0]-arr_graficar.shape[0]),arr_archivar.shape[1]))
             arr_archivar = np.append(arr_archivar,arr_igualar, 0)
-
     arr_archivar = np.append(arr_archivar,arr_graficar,1)
-    return arr_archivar
-    ##OK, estas listo.
-
-
-bi = abrir_archivo('bar.xls')
-bo = buscar_masa_MA(bi)
-bu = generar_hoja(bi)
-bf = separar_ciclos(bu, bo)
+    return arr_archivar, arr_ciclos_tiempo, arr_ciclos_tipo, arr_ciclos_limite
 
 
 
-if False:
+
+def hacer_graficas(arr_archivar, arr_ciclos_tiempo, arr_ciclos_tipo, arr_ciclos_limite):
     #Verificamos que tenemos todos los valores que necesitamos.
     arr_decir = len(arr_ciclos_tiempo)
     color = ('FF0000', '0000AA', '00AA00', '999900', '009999', '990099', '555555', '000000', 'FF8888', 'FF0000')
@@ -224,11 +194,10 @@ if False:
     arr_eficiencias = ()
     arr_descargas = ()
     arr_lineas = ()
-    fig, ax = pl.subplots()
-    x_min = 256.0
-    x_max = -256.0
-    y_min = 256.0
-    y_max = -256.0
+    x_min = 1000;
+    x_max = -1;
+    y_min = 1000;
+    y_max = -1;
 
     #Refactorizado para que tenga menos líneas.
     for kk in range(0, arr_decir):
@@ -236,7 +205,7 @@ if False:
         ii = -1-kk
 
         ##Ahora, armamos algo más dinámico.
-        arr_armado = np.zeros((arr_ciclos_limite[ii],2));
+        arr_armado = np.zeros(((arr_ciclos_limite[ii]),2));
         arr_armado[:,0] = arr_archivar[0:arr_ciclos_limite[ii],2*ii]
         x_min = min(x_min,arr_armado[:,0].min())
         x_max = max(x_max,arr_armado[:,0].max())
@@ -258,35 +227,43 @@ if False:
                 jj = 0
         else:
             arr_descargas = arr_descargas + (arr_archivar[arr_ciclos_limite[ii]-1,2*ii],)
+    return arr_lineas, arr_eficiencias, arr_descargas, x_min, x_max, y_min, y_max
 
-
-
+def dibujar_capacidades (arr_lineas, x_min, x_max, y_min, y_max):
+    fig, ax = pl.subplots()
     line_segments = LineCollection(arr_lineas)
     ax.add_collection(line_segments)
     ax.set_xlim(x_min,x_max)
     ax.set_ylim(y_min,y_max)
     pl.show()
+    return None
 
-    #Luego, invertimos estos arrays.
+def dibujar_eficiencias (arr_eficiencias, arr_descargas):
     arr_eficiencias = arr_eficiencias[::-1]
     arr_descargas = arr_descargas[::-1]
-
-    #Refactorizar esto.
     arr_equis = range(1,len(arr_descargas)+1)
-    #pl.plot(arr_equis[1:],arr_eficiencias,arr_equis,arr_descargas)
-
     color = 'tab:red'
     fig, ax1 = pl.subplots()
     ax1.set_xlabel("Ciclo")
     ax1.set_ylabel('Capacidad de Descarga[mAh/g]', color = color)
     ax1.plot(arr_equis, arr_descargas, color=color)
     ax1.tick_params(axis='y', labelcolor=color)
-
     ax2 = ax1.twinx()
     color = 'tab:blue'
     ax2.set_ylabel('Eficiencia[%]',color = color)
     ax2.plot(arr_equis[1:], arr_eficiencias, color = color)
     ax2.tick_params(axis='y', labelcolor=color)
-
     fig.tight_layout()
     pl.show()
+    return None
+
+#Para probar.
+bi = abrir_archivo('bar.xls')
+bo = buscar_masa_MA(bi)
+
+if False:
+    bu = generar_hoja(bi)
+    bf, ctm, cty, cl = separar_ciclos(bu, bo)
+    al, ae, ad, xm, xM, ym, yM = hacer_graficas(bf, ctm, cty, cl)
+    dibujar_capacidades(al, xm, xM, ym, yM)
+    dibujar_eficiencias(ae, ad)
