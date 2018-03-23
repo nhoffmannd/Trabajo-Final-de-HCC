@@ -19,7 +19,7 @@ def buscar_masa_MA (fle_open):
     sht_hoja = pd.read_excel(fle_open,int_hoja_buscada)
     material_activo = (sht_hoja.iloc[3,1])
     boo_aceptar = False
-    flo_MA = -1
+    flo_MA = False
     posicion_masa = -1
     if posicion_masa == -1:
         posicion_masa = material_activo.find('mg de MA')
@@ -29,12 +29,29 @@ def buscar_masa_MA (fle_open):
         posicion_masa = material_activo.find('mg MA ')
     if posicion_masa == -1:
         posicion_masa = material_activo.find('mg material activo')
+
     if not posicion_masa == -1:
+        print('encontramos uno.')
+        tiene_valor_antes = False
+        tiene_valor_ahora = False
         for i in range(0,5):
+            str_ma = material_activo[posicion_masa-(2+i):posicion_masa-1].replace(',','.')
+            print(str_ma + ' ' +  str(flo_MA))
             try:
-                flo_MA = float((material_activo[posicion_masa-2+i,posicion_masa-1]).replace(',','.'))
+                flo_MA = float(str_ma)
             except:
                 pass
+            if tiene_valor_ahora == True:
+                tiene_valor_antes = True
+            if type(flo_MA) == float:
+                tiene_valor_ahora = True
+                print('es float')
+            else:
+                print ('no es float')
+                if tiene_valor_antes == True:
+                    return float(material_activo[posicion_masa-(1+i):posicion_masa-1])
+                    break
+    
     if posicion_masa == -1:
         posicion_masa = material_activo.find('activo ')
         if not posicion_masa == -1:
@@ -47,7 +64,7 @@ def buscar_masa_MA (fle_open):
         posicion_masa = material_activo.find('MA ')
         if not posicion_masa == -1:
             posicion_masa = posicion_masa + len('MA ')
-    if not posicion_masa == -1:
+    if not posicion_masa == -1 and (type(flo_MA)!=float):
         try:
             flo_MA = float(material_activo[posicion_masa:posicion_masa+3])
         except:
@@ -55,6 +72,7 @@ def buscar_masa_MA (fle_open):
     if flo_MA > 0:
         boo_aceptar = True
     boo_empezamos = True
+    
     while boo_aceptar == False:
         boo_empezamos = False
         try:

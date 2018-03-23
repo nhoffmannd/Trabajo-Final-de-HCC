@@ -39,7 +39,7 @@ class Example(QMainWindow):
             f = (fname[0])
             f = abrir_archivo(fname[0])
             ma = buscar_masa_MA(f)
-            self.textEdit.setText(str(ma))
+            self.textEdit.setText(ma)
             hj = generar_hoja(f)
             #sh, ctm, cty, cl = separar_ciclos(hj, ma)
             #al, ae, ad = hacer_graficas(sh, ctm, cty, cl)
