@@ -36,7 +36,11 @@ class Example(QMainWindow):
         fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
         if fname[0]:
             f = (fname[0])
-            abrir_archivo(fname[0])
+            f = abrir_archivo(fname[0])
+            ma = buscar_masa_MA(f)
+            hj = generar_hoja(f)
+            sh = separar_hoja(hj, ma)
+            
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)

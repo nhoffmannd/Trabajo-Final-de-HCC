@@ -92,13 +92,14 @@ def generar_hoja( fle_open ):
                 arr_seleccion.append(ii)
     return pd.read_excel(fle_open,int_hoja_buscada,usecols=arr_seleccion)
 
-bi = abrir_archivo('bar.xls')
-bo = buscar_masa_MA(bi)
-bu = generar_hoja(bi)
 
-if False:
+
+def separar_ciclos ( sht_hoja , flo_MA ):
+    
+    arr_interes = list(sht_hoja.columns.values)
+
     #Ordenamos nuestros stats.
-    int_columnas_a_usar = len(arr_seleccion)
+    int_columnas_a_usar = len(arr_interes)
     for ii in range(0, int_columnas_a_usar):
         if (arr_interes[ii] == 'Cycle_Index'):
             ciclo = ii
@@ -204,43 +205,35 @@ if False:
             arr_archivar = np.append(arr_archivar,arr_igualar, 0)
 
     arr_archivar = np.append(arr_archivar,arr_graficar,1)
+    return arr_archivar
     ##OK, estas listo.
 
+
+bi = abrir_archivo('bar.xls')
+bo = buscar_masa_MA(bi)
+bu = generar_hoja(bi)
+bf = separar_ciclos(bu, bo)
+
+
+
+if False:
     #Verificamos que tenemos todos los valores que necesitamos.
     arr_decir = len(arr_ciclos_tiempo)
-    #for ii in range(0, arr_decir):
-        #print("Ciclo " + str(ii) + " de " + str(arr_ciclos_tipo[ii]) + " dura " + str(int(arr_ciclos_tiempo[ii])) + " seg, " + str(arr_ciclos_limite[ii]) + " lecturas.")
-
-    #Ahora los dibujamos.
-    #Vamos a usar la funcion exec.
-    #Es un agujero negro en la seguridad, pero esto es de uso en academia, no sale de aca.
-    #poit = 'arr_archivar[0:200,2],arr_archivar[0:200,3], "b," '
-
-    argumentos = ''
-
-    #Inicializar colores.
     color = ('FF0000', '0000AA', '00AA00', '999900', '009999', '990099', '555555', '000000', 'FF8888', 'FF0000')
     jj=0
-
     arr_eficiencias = ()
     arr_descargas = ()
     arr_lineas = ()
-
-
-
     fig, ax = pl.subplots()
-    x_min = 10000.0
-    x_max = -10000.0
-    y_min = 10000.0
-    y_max = -10000.0
+    x_min = 256.0
+    x_max = -256.0
+    y_min = 256.0
+    y_max = -256.0
 
     #Refactorizado para que tenga menos líneas.
     for kk in range(0, arr_decir):
         ##Se leen en sentido inverso, desde el último hasta el primero, para estar seguros de que el más viejo se vea por encima.
         ii = -1-kk
-        argumento = '' + 'arr_archivar[0:' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii) + '],'            #Introducir coord x.
-        argumento = argumento + 'arr_archivar[0:' + str(arr_ciclos_limite[ii]) + ',' + str(2*ii+1) + '],'   #Introducir coord y.
-        argumento = argumento + "'#" + color[jj] + "'"                                                      #Introducir argumentos de color.
 
         ##Ahora, armamos algo más dinámico.
         arr_armado = np.zeros((arr_ciclos_limite[ii],2));
@@ -266,14 +259,7 @@ if False:
         else:
             arr_descargas = arr_descargas + (arr_archivar[arr_ciclos_limite[ii]-1,2*ii],)
 
-        #Cerrar string cuando terminemos.
-        if not ii == arr_decir:
-            argumento = argumento + ','
 
-        #Agregar a los argumentos totales.
-        argumentos = argumentos + argumento
-
-    #exec('pl.plot(' + argumentos + ')')
 
     line_segments = LineCollection(arr_lineas)
     ax.add_collection(line_segments)
@@ -290,7 +276,6 @@ if False:
     #pl.plot(arr_equis[1:],arr_eficiencias,arr_equis,arr_descargas)
 
     color = 'tab:red'
-
     fig, ax1 = pl.subplots()
     ax1.set_xlabel("Ciclo")
     ax1.set_ylabel('Capacidad de Descarga[mAh/g]', color = color)
