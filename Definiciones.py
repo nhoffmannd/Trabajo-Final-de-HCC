@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import xlrd
-import matplotlib as mp
+#import matplotlib as mp ##NO HACE FALTA IMPORTAR ESTE.
 import matplotlib.pyplot as pl
 from matplotlib.collections import LineCollection
 
@@ -9,6 +9,8 @@ def abrir_archivo( filename):
     return pd.ExcelFile( filename)
 
 def buscar_masa_MA (fle_open):
+    #Busca la casilla con el valor de material activo.
+    #print('Algo hemos llegado a leer.')
     int_hoja_buscada = -1
     str_info = "Info"
     arr_hojas = fle_open.sheet_names
@@ -17,7 +19,10 @@ def buscar_masa_MA (fle_open):
             int_hoja_buscada = ii
             break
     sht_hoja = pd.read_excel(fle_open,int_hoja_buscada)
+    #print('Algo hemos llegado a leer.')
     material_activo = (sht_hoja.iloc[3,1])
+    #print('Algo hemos llegado a leer.')
+    
     boo_aceptar = False
     flo_MA = False
     posicion_masa = -1
@@ -30,27 +35,24 @@ def buscar_masa_MA (fle_open):
     if posicion_masa == -1:
         posicion_masa = material_activo.find('mg material activo')
 
+    #print('Vamos a leer la casilla.' + material_activo[:posicion_masa])
     if not posicion_masa == -1:
-        print('encontramos uno.')
-        tiene_valor_antes = False
-        tiene_valor_ahora = False
-        for i in range(0,5):
-            str_ma = material_activo[posicion_masa-(2+i):posicion_masa-1].replace(',','.')
-            print(str_ma + ' ' +  str(flo_MA))
+        #print('Entrando al loop.')
+        for i in range(1,5):
+            str_ma = material_activo[posicion_masa-i:posicion_masa]
+    #        print ('determinando' + str_ma)
             try:
                 flo_MA = float(str_ma)
+    #            print ("Es " + str(flo_MA))
             except:
+    #            print ("no es")
                 pass
-            if tiene_valor_ahora == True:
-                tiene_valor_antes = True
-            if type(flo_MA) == float:
-                tiene_valor_ahora = True
-                print('es float')
-            else:
-                print ('no es float')
-                if tiene_valor_antes == True:
-                    return float(material_activo[posicion_masa-(1+i):posicion_masa-1])
-                    break
+    #print ('No se traba todavia.')
+    if type(flo_MA) == float:
+        print (str(flo_MA) + ' es la respuesta y todavia no se traba.')
+        return flo_MA
+    #print('No encontramos la cantidad de masa con sufijo.')
+
     
     if posicion_masa == -1:
         posicion_masa = material_activo.find('activo ')
@@ -276,10 +278,9 @@ def dibujar_eficiencias (arr_eficiencias, arr_descargas):
     return None
 
 #Para probar.
-bi = abrir_archivo('bar.xls')
-bo = buscar_masa_MA(bi)
-
 if False:
+    bi = abrir_archivo('bar.xls')
+    bo = buscar_masa_MA(bi)
     bu = generar_hoja(bi)
     bf, ctm, cty, cl = separar_ciclos(bu, bo)
     al, ae, ad, xm, xM, ym, yM = hacer_graficas(bf, ctm, cty, cl)
