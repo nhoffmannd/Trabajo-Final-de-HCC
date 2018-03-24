@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import xlrd
-#import matplotlib as mp ##NO HACE FALTA IMPORTAR ESTE.
 import matplotlib.pyplot as pl
 from matplotlib.collections import LineCollection
 
@@ -49,7 +48,7 @@ def buscar_masa_MA (fle_open):
                 pass
     #print ('No se traba todavia.')
     if type(flo_MA) == float:
-        print (str(flo_MA) + ' es la respuesta y todavia no se traba.')
+        #print (str(flo_MA) + ' es la respuesta y todavia no se traba.')
         return flo_MA
     #print('No encontramos la cantidad de masa con sufijo.')
 
@@ -209,7 +208,6 @@ def separar_ciclos ( sht_hoja , flo_MA ):
 def hacer_graficas(arr_archivar, arr_ciclos_tiempo, arr_ciclos_tipo, arr_ciclos_limite):
     #Verificamos que tenemos todos los valores que necesitamos.
     arr_decir = len(arr_ciclos_tiempo)
-    color = ('FF0000', '0000AA', '00AA00', '999900', '009999', '990099', '555555', '000000', 'FF8888', 'FF0000')
     jj=0
     arr_eficiencias = ()
     arr_descargas = ()
@@ -223,7 +221,6 @@ def hacer_graficas(arr_archivar, arr_ciclos_tiempo, arr_ciclos_tipo, arr_ciclos_
     for kk in range(0, arr_decir):
         ##Se leen en sentido inverso, desde el último hasta el primero, para estar seguros de que el más viejo se vea por encima.
         ii = -1-kk
-
         ##Ahora, armamos algo más dinámico.
         arr_armado = np.zeros(((arr_ciclos_limite[ii]),2));
         arr_armado[:,0] = arr_archivar[0:arr_ciclos_limite[ii],2*ii]
@@ -234,7 +231,6 @@ def hacer_graficas(arr_archivar, arr_ciclos_tiempo, arr_ciclos_tipo, arr_ciclos_
         y_max = max(y_max,arr_armado[:,1].max())
         arr_lineas = arr_lineas + (arr_armado,)
 
-        ##Esto busca si empezó un nuevo ciclo, y si es así, cambia el color.        
         if arr_ciclos_tipo[ii] == ['Carga']:
             if kk != arr_decir-1:
                 flt_carga = arr_archivar[arr_ciclos_limite[ii]-1,2*ii]
@@ -242,9 +238,6 @@ def hacer_graficas(arr_archivar, arr_ciclos_tiempo, arr_ciclos_tipo, arr_ciclos_
                 if flt_eficiencia > 200:
                     flt_eficiencia = 0
                 arr_eficiencias = arr_eficiencias + (flt_eficiencia,)
-            jj = jj +1
-            if (jj > len(color)-1):
-                jj = 0
         else:
             arr_descargas = arr_descargas + (arr_archivar[arr_ciclos_limite[ii]-1,2*ii],)
     return arr_lineas, arr_eficiencias, arr_descargas, x_min, x_max, y_min, y_max

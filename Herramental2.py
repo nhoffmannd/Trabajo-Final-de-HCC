@@ -34,16 +34,16 @@ class Example(QMainWindow):
         
         
     def showDialog(self):
-        fname = QFileDialog.getOpenFileName(self, 'Open file', '/home')
+        fname = QFileDialog.getOpenFileName(self, 'Open file', 'C:\EQTEST')
         if fname[0]:
             f = (fname[0])
             f = abrir_archivo(fname[0])
             ma = buscar_masa_MA(f)
-            self.textEdit.setText(str(ma))
             hj = generar_hoja(f)
-            #sh, ctm, cty, cl = separar_ciclos(hj, ma)
-            #al, ae, ad = hacer_graficas(sh, ctm, cty, cl)
-            #dibujar_capacidades(al)
+            sh, ctm, cty, cl = separar_ciclos(hj, ma)
+            al, ae, ad, xmi, xma, ymi, yma = hacer_graficas(sh, ctm, cty, cl)
+            dibujar_eficiencias(ae,ad)
+            dibujar_capacidades(al, xmi, xma, ymi, yma)
         
 if __name__ == '__main__':
     app = QApplication(sys.argv)
