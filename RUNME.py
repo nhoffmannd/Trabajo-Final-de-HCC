@@ -6,7 +6,6 @@ exec(open('Definiciones.py').read())
 
 class Preparado:
     def __init__(self, masa, planilla, tiempos, tipos, limites):
-        self.existe = True;
         self.masa = masa;
         self.planilla = planilla;
         self.tiempos = tiempos;
@@ -17,7 +16,6 @@ class Example(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        
         self.initUI()
         
         
@@ -32,21 +30,27 @@ class Example(QMainWindow):
         openFile.setStatusTip('Open new File')
         openFile.triggered.connect(self.showDialog)
 
-        veriFile = QAction(QIcon('web2.png'), 'Verify', self)
-        veriFile.setShortcut('Ctrl+V')
-        veriFile.setStatusTip('Verificar que haya un elemento')
-        veriFile.triggered.connect(self.hay_algo)
+        effiFile = QAction(QIcon('web2.png'), 'Eficiencias', self)
+        effiFile.setShortcut('Ctrl+E')
+        effiFile.setStatusTip('Mostrar Eficiencias')
+        effiFile.triggered.connect(self.mostrar_eficiencias)
 
-        geneFile = QAction(QIcon('web3.png'), 'Generar', self)
-        geneFile.setShortcut('Ctrl+G')
-        geneFile.setStatusTip('Generar un elemento')
-        geneFile.triggered.connect(self.generar_objeto)
+        ciclFile = QAction(QIcon('web3.png'), 'Ciclados', self)
+        ciclFile.setShortcut('Ctrl+C')
+        ciclFile.setStatusTip('Mostrar Ciclados')
+        ciclFile.triggered.connect(self.mostrar_ciclados)
+
+        exitFile = QAction(QIcon('web5.png'), 'Salir', self)
+        exitFile.setShortcut('Ctrl+Q')
+        exitFile.setStatusTip('Irse')
+        exitFile.triggered.connect(self.cerrar_programa)
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(openFile)
-        fileMenu.addAction(veriFile)
-        fileMenu.addAction(geneFile)
+        fileMenu.addAction(effiFile)
+        fileMenu.addAction(ciclFile)
+        fileMenu.addAction(exitFile)
         
         self.setGeometry(300, 300, 350, 300)
         self.setWindowTitle('File dialog')
@@ -60,21 +64,48 @@ class Example(QMainWindow):
             f = abrir_archivo(fname[0])
             ma = buscar_masa_MA(f)
             hj = generar_hoja(f)
+            self.Prep = Preparado(0.0,0.0,0.0,0.0,0.0)
             sh, ctm, cty, cl = separar_ciclos(hj, ma)
-            #Prep = Preparado(ma, sh, ctm, cty, cl)
-            #al, ae, ad, xmi, xma, ymi, yma = hacer_graficas(sh, ctm, cty, cl)
-            #dibujar_eficiencias(ae,ad)
-            #dibujar_capacidades(al, xmi, xma, ymi, yma)
-
+            
+            self.Prep.masa = ma
+            self.Prep.planilla = sh
+            self.Prep.tiempos = ctm
+            self.Prep.tipos = cty
+            self.Prep.limites = cl
+            
     def hay_algo(self):
         try:
-            self.textEdit.setText(float(Prep.ma))
+            self.textEdit.setText(str(self.Prep.masa) + ", hay algo aquí.")
         except:
-            self.textEdit.setText('Nohay')
+            self.textEdit.setText('No se ha seleccionado una grilla.')
 
     def generar_objeto(self):
-        Prep = Preparado(0,0,0,0,0)
+        self.Prep = Preparado(0.0,0.0,0.0,0.0,0.0)
 
+    def mostrar_eficiencias(self):
+        try:
+            sh = self.Prep.planilla
+            ctm = self.Prep.tiempos
+            cty = self.Prep.tipos
+            cl = self.Prep.limites
+            al, ae, ad, xmi, xma, ymi, yma = hacer_graficas(sh, ctm, cty, cl)
+            dibujar_eficiencias(ae,ad)
+        except:
+            self.textEdit.setText('Debes elegir una planilla primero.')
+
+    def mostrar_ciclados(self):
+        try:
+            sh = self.Prep.planilla
+            ctm = self.Prep.tiempos
+            cty = self.Prep.tipos
+            cl = self.Prep.limites
+            al, ae, ad, xmi, xma, ymi, yma = hacer_graficas(sh, ctm, cty, cl)
+            dibujar_capacidades(al, xmi, xma, ymi, yma)
+        except:
+            self.textEdit.setText('Debes elegir una planilla primero.')
+
+    def cerrar_programa(self):
+        sys.exit()
 
 if __name__ == '__main__':
     

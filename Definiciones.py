@@ -143,21 +143,21 @@ def separar_ciclos ( sht_hoja , flo_MA ):
     flt_corriente = 0.0;
     flt_paso=0;
     for ii in range(0, filas_interes):
-        flt_corriente = sht_hoja[corriente][ii]
+        flt_corriente = sht_hoja["Current(A)"][ii]
         if not flt_corriente == 0:
-            arr_append[0,1] = sht_hoja[voltaje][ii]
+            arr_append[0,1] = sht_hoja["Voltage(V)"][ii]
             if flt_corriente > 0:
-                arr_append[0,0] = sht_hoja[carga][ii] * 1000000 / flo_MA
+                arr_append[0,0] = sht_hoja["Charge_Capacity(Ah)"][ii] * 1000000 / flo_MA
             else:
-                arr_append[0,0] = sht_hoja[descarga][ii] * 1000000 / flo_MA
-            flt_paso = sht_hoja[paso][ii]
+                arr_append[0,0] = sht_hoja["Discharge_Capacity(Ah)"][ii] * 1000000 / flo_MA
+            flt_paso = sht_hoja["Step_Index"][ii]
             if not int_ultimo_paso == flt_paso:
                 int_ultimo_paso = flt_paso
                 arr_existe = False
                 if int_primer_paso:
                     int_primer_paso = False
                 else:
-                    arr_ciclos_tiempo[-1] = sht_hoja[tiempo][jj]
+                    arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][jj]
                     arr_ciclos_tiempo = arr_ciclos_tiempo + [0]
                     arr_ciclos_limite = arr_ciclos_limite + [0]
                     if flt_corriente < 0:
@@ -187,8 +187,8 @@ def separar_ciclos ( sht_hoja , flo_MA ):
 
             jj = ii
             arr_ciclos_limite[-1] = 1 + arr_ciclos_limite[-1]
-    arr_ciclos_tiempo[-1] = sht_hoja[tiempo][jj]
-    if sht_hoja[corriente][ii] > 0:
+    arr_ciclos_tiempo[-1] = sht_hoja["Step_Time(s)"][jj]
+    if sht_hoja["Current(A)"][ii] > 0:
         arr_ciclos_tipo[-1] = ['Carga']
     else:
         arr_ciclos_tipo[-1] = ['Descarga']
