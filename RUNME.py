@@ -99,7 +99,7 @@ class Example(QMainWindow):
             ctm = self.Prep.tiempos
             cty = self.Prep.tipos
             cl = self.Prep.limites
-            al, ae, ad, xmi, xma, ymi, yma = hacer_graficas(sh, ctm, cty, cl)
+            al, xmi, xma, ymi, yma = hacer_graficas_ciclos(sh, ctm, cl)
             dibujar_capacidades(al, xmi, xma, ymi, yma)
         except:
             self.textEdit.setText('Debes elegir una planilla primero.')

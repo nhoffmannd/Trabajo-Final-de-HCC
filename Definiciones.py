@@ -3,6 +3,7 @@ import numpy as np
 import xlrd
 import matplotlib.pyplot as pl
 from matplotlib.collections import LineCollection
+from matplotlib import colors as mcolors
 
 def abrir_archivo( filename):
     return pd.ExcelFile( filename)
@@ -230,7 +231,7 @@ def hacer_graficas(arr_archivar, arr_ciclos_tiempo, arr_ciclos_tipo, arr_ciclos_
         y_min = min(y_min,arr_armado[:,1].min())
         y_max = max(y_max,arr_armado[:,1].max())
         arr_lineas = arr_lineas + (arr_armado,)
-
+        
         if arr_ciclos_tipo[ii] == ['Carga']:
             if kk != arr_decir-1:
                 flt_carga = arr_archivar[arr_ciclos_limite[ii]-1,2*ii]
@@ -242,9 +243,37 @@ def hacer_graficas(arr_archivar, arr_ciclos_tiempo, arr_ciclos_tipo, arr_ciclos_
             arr_descargas = arr_descargas + (arr_archivar[arr_ciclos_limite[ii]-1,2*ii],)
     return arr_lineas, arr_eficiencias, arr_descargas, x_min, x_max, y_min, y_max
 
+
+def hacer_graficas_ciclos(arr_archivar, arr_ciclos_tiempo, arr_ciclos_limite):
+    arr_decir = len(arr_ciclos_tiempo)
+    jj=0
+    arr_eficiencias = ()
+    arr_descargas = ()
+    arr_lineas = ()
+    x_min = 1000;
+    x_max = -1;
+    y_min = 1000;
+    y_max = -1;
+    for kk in range(0, arr_decir):
+        ii = -1-kk
+        arr_armado = np.zeros(((arr_ciclos_limite[ii]),2));
+        arr_armado[:,0] = arr_archivar[0:arr_ciclos_limite[ii],2*ii]
+        x_min = min(x_min,arr_armado[:,0].min())
+        x_max = max(x_max,arr_armado[:,0].max())
+        arr_armado[:,1] = arr_archivar[0:arr_ciclos_limite[ii],2*ii+1]
+        y_min = min(y_min,arr_armado[:,1].min())
+        y_max = max(y_max,arr_armado[:,1].max())
+        arr_lineas = arr_lineas + (arr_armado,)
+    return arr_lineas, x_min, x_max, y_min, y_max
+
+
+
 def dibujar_capacidades (arr_lineas, x_min, x_max, y_min, y_max):
     fig, ax = pl.subplots()
-    line_segments = LineCollection(arr_lineas)
+    #colors = [mcolors.to_rgba(c)
+    #      for c in plt.rcParams['axes.prop_cycle'].by_key()['color']]
+    coulores = ('black', 'black','blue','blue','purple','purple','red','red','green','green','cyan','cyan','orange','orange','pink','pink','darkgreen','darkgreen')
+    line_segments = LineCollection(arr_lineas, colors=coulores)
     ax.add_collection(line_segments)
     ax.set_xlim(x_min,x_max)
     ax.set_ylim(y_min,y_max)
