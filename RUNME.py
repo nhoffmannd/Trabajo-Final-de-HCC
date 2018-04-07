@@ -21,6 +21,8 @@ class Example(QMainWindow):
         
     def initUI(self):      
 
+        self.skip = False
+
         self.textEdit = QTextEdit()
         self.setCentralWidget(self.textEdit)
         self.statusBar()
@@ -83,15 +85,57 @@ class Example(QMainWindow):
         self.Prep = Preparado(0.0,0.0,0.0,0.0,0.0)
 
     def mostrar_eficiencias(self):
+        self.skip = False
         try:
             sh = self.Prep.planilla
-            ctm = self.Prep.tiempos
-            cty = self.Prep.tipos
-            cl = self.Prep.limites
-            al, ae, ad, xmi, xma, ymi, yma = hacer_graficas(sh, ctm, cty, cl)
-            dibujar_eficiencias(ae,ad)
         except:
-            self.textEdit.setText('Debes elegir una planilla primero.')
+            self.textEdit.setText('No se ha podido leer la tabla de datos.')
+            self.skip = True
+        if self.skip == False:
+            try:
+                ctm = self.Prep.tiempos
+            except:
+                self.textEdit.setText('No se han podido leer los tiempos.')
+                self.skip = True
+        if self.skip == False:
+            try:
+                cty = self.Prep.tipos
+            except:
+                self.textEdit.setText('No se han podido leer los tipos de ciclo.')
+                self.skip = True
+        if self.skip == False:
+            try:
+                cl = self.Prep.limites
+            except:
+                self.textEdit.setText('No se han podido leer los límites.')
+                self.skip = True
+        if self.skip == False:
+            try:
+                al, ae, ad, xmi, xma, ymi, yma = hacer_graficas(sh, ctm, cty, cl)
+                print('sh')
+                print(sh)
+                print ('ctm')
+                print (ctm)
+                print('cty')
+                print(cty)
+                print('cl')
+                print(cl)
+            except:
+                self.textEdit.setText('No se ha podido hacer el gráfico.')
+                self.skip = True
+                print('sh')
+                print(sh)
+                print ('ctm')
+                print (ctm)
+                print('cty')
+                print(cty)
+                print('cl')
+                print(cl)
+        if self.skip == False:
+            try:
+                dibujar_eficiencias(ae,ad)
+            except:
+                self.textEdit.setText('No se pudieron dibujar los graficos.')
 
     def mostrar_ciclados(self):
         try:
